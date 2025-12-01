@@ -1,0 +1,41 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: phoenix_app
+    ports:
+      - "5432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  phoenix:
+    build: ./phoenix_api
+    command: mix phx.server
+    environment:
+      MIX_ENV: dev
+      DATABASE_URL: ecto://postgres:postgres@db/phoenix_app
+    volumes:
+      - ./phoenix_api:/phoenix_api
+    ports:
+      - "4000:4000"
+    depends_on:
+      - db
+
+  symfony:
+    build: ./symfony_app
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./symfony_app:/var/www/html
+    depends_on:
+      - phoenix
+    environment:
+      PHOENIX_API_URL: http://phoenix:4000/api
+
+volumes:
+  db-data:
