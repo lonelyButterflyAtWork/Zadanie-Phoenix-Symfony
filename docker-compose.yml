@@ -27,15 +27,16 @@ services:
       - db
 
   symfony:
-    build: ./symfony_app
-    ports:
-      - "8000:8000"
+    build:
+      context: ./symfony_app
+      dockerfile: Dockerfile
     volumes:
-      - ./symfony_app:/var/www/html
+      - ./symfony_app/app:/var/www/html
+    ports:
+      - "8000:80"
     depends_on:
       - phoenix
-    environment:
-      PHOENIX_API_URL: http://phoenix:4000/api
+
 
 volumes:
   db-data:
