@@ -48,6 +48,16 @@ defmodule PhoenixApiWeb.Endpoint do
 
   plug Plug.MethodOverride
   plug Plug.Head
-  plug Plug.Session, @session_options
+
   plug PhoenixApiWeb.Router
+
+  @impl true
+  def init(_key, config) do
+    config =
+      Keyword.put(config, :render_errors,
+        formats: [json: PhoenixApiWeb.ErrorJSON],
+        layout: false
+      )
+    {:ok, config}
+  end
 end

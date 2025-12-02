@@ -11,7 +11,6 @@ defmodule PhoenixApi.Users do
   # PUBLIC API
   # ======================================
 
-  # GET /users → lista z filter/sort/page
   def list_users(params \\ %{}) do
     User
     |> filter_first_name(params)
@@ -24,7 +23,11 @@ defmodule PhoenixApi.Users do
     |> Repo.all()
   end
 
-  # Łącza do paginacji
+  def get_user(id) do
+    Repo.get(User, id)
+  end
+
+
   def count_users(params \\ %{}) do
     User
     |> filter_first_name(params)

@@ -31,7 +31,8 @@ services:
       context: ./symfony_app
       dockerfile: Dockerfile
     volumes:
-      - ./symfony_app/app:/var/www/html
+      - ./symfony_app/public:/var/www/html/public
+      - ./symfony_app:/var/www/html
     ports:
       - "8000:80"
     depends_on:

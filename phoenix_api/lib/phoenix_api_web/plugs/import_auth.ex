@@ -5,7 +5,8 @@ defmodule PhoenixApiWeb.Plugs.ImportAuth do
 
   def call(conn, _opts) do
     expected = Application.get_env(:phoenix_api, :import_token)
-    provided = get_req_header(conn, "x-api-token") |> List.first()
+    # Pobierz token z nagłówka X-Import-Key zamiast X-Api-Token
+    provided = get_req_header(conn, "x-import-key") |> List.first()
 
     if provided == expected do
       conn

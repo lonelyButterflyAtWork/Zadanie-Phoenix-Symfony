@@ -17,7 +17,7 @@ config :phoenix_api, PhoenixApiWeb.Endpoint,
   http: [ip: {0, 0, 0, 0}],
   check_origin: false,
   code_reloader: true,
-  debug_errors: true,
+  debug_errors: false,
   secret_key_base: "FtZhHJGe8Y2VieBQiQWaXoU8AfB+1GGk+i6Ie3PD2PsLBuddJKufos71m/LtoiVP",
   watchers: []
 
