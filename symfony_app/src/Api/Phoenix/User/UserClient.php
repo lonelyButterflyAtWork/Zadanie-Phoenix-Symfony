@@ -6,6 +6,7 @@ namespace App\Api\Phoenix\User;
 
 use App\Api\Phoenix\Http\PhoenixHttpClient;
 use App\Exception\Phoenix\ApiResponseException;
+use InvalidArgumentException;
 
 class UserClient implements UserClientInterface
 {
@@ -47,7 +48,7 @@ class UserClient implements UserClientInterface
             throw new ApiResponseException("Invalid API response for user #{$id}.");
         }
 
-        if (isset($response['birthdate']) && is_string($response['birthdate'])) {
+        if (isset($response['birthdate']) && \is_string($response['birthdate'])) {
             $response['birthdate'] = \DateTime::createFromFormat('Y-m-d', $response['birthdate']) ?: null;
         }
 
@@ -65,6 +66,7 @@ class UserClient implements UserClientInterface
         if (isset($payload['birthdate']) && $payload['birthdate'] instanceof \DateTimeInterface) {
             $payload['birthdate'] = $payload['birthdate']->format('Y-m-d');
         }
+        $this->validateUserData($payload);
         return $this->client->post('/users', $payload);
     }
 
@@ -80,6 +82,7 @@ class UserClient implements UserClientInterface
         if (isset($payload['birthdate']) && $payload['birthdate'] instanceof \DateTimeInterface) {
             $payload['birthdate'] = $payload['birthdate']->format('Y-m-d');
         }
+        $this->validateUserData($payload);
         return $this->client->put("/users/{$id}", $payload);
     }
 
@@ -101,6 +104,20 @@ class UserClient implements UserClientInterface
                 $status,
                 $e
             );
+        }
+    }
+
+    private function validateUserData(array $data): void
+    {
+        if (
+            !isset($data['first_name']) ||
+            !\is_string($data['first_name']) ||
+            trim($data['first_name']) === ''
+        ) {
+            throw new InvalidArgumentException('First name is required and must be a non-empty string.');
+        }
+        if (preg_match('/<[^>]+>/', $data['first_name'])) {
+            throw new InvalidArgumentException('First name contains invalid characters.');
         }
     }
 }

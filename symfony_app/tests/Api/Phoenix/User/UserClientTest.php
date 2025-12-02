@@ -7,6 +7,7 @@ namespace App\Tests\Api\Phoenix\User;
 use App\Api\Phoenix\User\UserClient;
 use App\Api\Phoenix\Http\PhoenixHttpClient;
 use PHPUnit\Framework\TestCase;
+use InvalidArgumentException;
 
 class UserClientTest extends TestCase
 {
@@ -55,6 +56,24 @@ class UserClientTest extends TestCase
         $this->assertEquals(3, $result['id']);
     }
 
+    public function testCreateUserWithInvalidInputThrowsException(): void
+    {
+        $http = $this->createMock(PhoenixHttpClient::class);
+        $client = new UserClient($http);
+
+        $this->expectException(InvalidArgumentException::class);
+        $client->createUser(['first_name' => '<script>alert(1)</script>']);
+    }
+
+    public function testCreateUserWithEmptyFirstNameThrowsException(): void
+    {
+        $http = $this->createMock(PhoenixHttpClient::class);
+        $client = new UserClient($http);
+
+        $this->expectException(InvalidArgumentException::class);
+        $client->createUser(['first_name' => '']);
+    }
+
     public function testUpdateUserReturnsUpdatedUser(): void
     {
         $http = $this->createMock(PhoenixHttpClient::class);
@@ -65,6 +84,24 @@ class UserClientTest extends TestCase
 
         $this->assertIsArray($result);
         $this->assertEquals('Janek', $result['first_name']);
+    }
+
+    public function testUpdateUserWithInvalidInputThrowsException(): void
+    {
+        $http = $this->createMock(PhoenixHttpClient::class);
+        $client = new UserClient($http);
+
+        $this->expectException(InvalidArgumentException::class);
+        $client->updateUser(1, ['first_name' => '<script>alert(1)</script>']);
+    }
+
+    public function testUpdateUserWithEmptyFirstNameThrowsException(): void
+    {
+        $http = $this->createMock(PhoenixHttpClient::class);
+        $client = new UserClient($http);
+
+        $this->expectException(InvalidArgumentException::class);
+        $client->updateUser(1, ['first_name' => '']);
     }
 
     public function testDeleteUserDoesNotThrow(): void
